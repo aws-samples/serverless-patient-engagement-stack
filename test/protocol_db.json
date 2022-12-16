@@ -1,0 +1,8 @@
+{
+    "id": "PROTOCOL_DB",
+    "name": "Monthly Checkup",
+    "type": "Monthly consultation with your physician",
+    "domain": "Consultation",
+    "expireInDays": "365",
+    "createdAt": "2022-09-17T07:30:00.000Z"
+}

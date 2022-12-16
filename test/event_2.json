@@ -1,0 +1,10 @@
+{
+    "id": "EVENT_WEEKLY",
+    "protocolID": "PROTOCOL_DB",
+    "content": "Record blood glucose level today",
+    "relativeTime": "455",
+    "type": "SMS",
+    "recurringFrequencyInDays": "0",
+    "recurring": "false",
+    "createdAt": "2022-10-13T07:30:00.000Z"
+} 

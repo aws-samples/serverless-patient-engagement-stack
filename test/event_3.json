@@ -1,0 +1,10 @@
+{
+    "id": "EVENT_EMAIL_MONTHLY",
+    "protocolID": "PROTOCOL_DB",
+    "content": "Monthly consultation with your physician",
+    "relativeTime": "455",
+    "type": "EMAIL",
+    "recurringFrequencyInDays": "0",
+    "recurring": "false",
+    "createdAt": "2022-10-13T07:30:00.000Z"
+} 

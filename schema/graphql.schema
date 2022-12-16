@@ -1,0 +1,54 @@
+type CurrentSchedule @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userId: String
+  eventId: String
+  content: String
+  eventTime: AWSDateTime
+  status: String
+  retryTime: AWSDateTime
+  retryCount: Int
+  eventType: EventType
+  email: String
+  phoneNumber: String
+}
+
+type Encounter @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  User: User @hasOne
+  Protocol: Protocol @hasOne
+  startedOn: AWSDateTime
+}
+
+type Protocol @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  type: String
+  domain: String
+  Events: [Event] @hasMany(indexName: "byProtocol", fields: ["id"])
+  expireInDays: Int
+}
+
+enum EventType {
+  SMS
+  EMAIL
+  CALL
+  PUSH
+}
+
+type Event @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  protocolID: ID! @index(name: "byProtocol")
+  content: String
+  relativeTime: Int
+  type: EventType
+  recurringFrequencyInDays: Int
+  recurring: Boolean
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  type: String
+  phoneNumber: String
+  email: String
+}

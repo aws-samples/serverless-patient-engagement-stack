@@ -1,0 +1,9 @@
+{
+    "id": "JOHNDOE",
+    "name": "John Doe",
+    "type": "Patient",
+    "gender": "Male",
+    "phoneNumber": "+919886XXXXX",
+    "emailId": "your.email@here.com",
+    "createdAt": "2022-09-13T07:30:00.000Z"
+} 
