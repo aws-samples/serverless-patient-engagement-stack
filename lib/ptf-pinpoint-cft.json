@@ -1,0 +1,68 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deploys an Amazon Pinpoint Project and setsup SMS and Email channels.",
+    "Parameters" : {
+        "Region" : {
+          "Type" : "String",
+          "Default" : "us-east-1",
+          "Description" : "Region"
+        },
+        "EmailId" : {
+            "Type" : "String",
+            "Default" : "praghavs@amazon.com",
+            "Description" : "From Email"
+          },   
+          "AWSAccountId" : {
+            "Type" : "String",
+            "Default" : "153264177053",
+            "Description" : "AWSAccount ID"
+          },
+          "PinpointProjectName" : {
+            "Type" : "String",
+            "Default" : "ptf-pinpoint-project",
+            "Description" : "Pinpoint Project Name"
+          }                            
+    },
+    "Resources": {
+        "ptPinpointProject": {
+            "Type" : "AWS::Pinpoint::App",
+            "Properties" : {
+                "Name" : { "Ref" : "PinpointProjectName"}
+            }
+        },
+        "ptPinpointSMSChannel": {
+            "Type" : "AWS::Pinpoint::SMSChannel",
+            "Properties" : {
+                "ApplicationId" : { "Ref" : "ptPinpointProject" },
+                "Enabled" : true
+            }
+        },
+        "ptPinpointEmailChannel" : {
+            "Type" : "AWS::Pinpoint::EmailChannel",
+            "Properties" : {
+                "ApplicationId" : { "Ref" : "ptPinpointProject" },
+                "Enabled" : true,
+                "Identity": { "Fn::Join" : [ "/", [ { "Fn::Join" : [ ":", [ "arn:aws:ses", { "Ref":"Region" }, { "Ref":"AWSAccountId" }, "identity" ] ] }, { "Ref":"EmailId" } ] ] },
+                "FromAddress" : { "Ref" : "EmailId" }
+              }
+        },
+        "ConnectInstanceId": {
+            "Type": "AWS::SSM::Parameter",
+            "Properties": {
+                "Name": "/ptf/pinpoint/v1/PinpointAppId",
+                "Type": "String",
+                "Value": { "Ref": "ptPinpointProject" },
+                "Description": "Pinpoint Application Id",
+            }
+        }
+    },
+    "Outputs": {
+        "ptPinpointApplicationId": {
+            "Description": "The ARN of Pinpoint Project instance",
+            "Value": { "Ref": "ptPinpointProject" },
+            "Export" : {
+                  "Name" : {"Fn::Sub": "PtPinpointApplicationID" }
+            }              
+        }        
+    }
+}

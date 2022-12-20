@@ -1,0 +1,200 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deploys an Amazon Connect instance with contact flow.",
+    "Parameters" : {
+        "Region" : {
+          "Type" : "String",
+          "Default" : "us-east-1",
+          "Description" : "Region"
+        },
+        "ConnectInstanceAlias" : {
+            "Type" : "String",
+            "Default" : "ptf-connect-instance",
+            "Description" : "Connect Instance Alias"
+        }, 
+        "ConnectDomainName" : {
+            "Type" : "String",
+            "Default" : "amazon-connect-ptf-instance",
+            "Description" : "Amazon Connect Domain Name"
+        }, 
+        "ConnectDomainExpiryDays" : {
+            "Type" : "String",
+            "Default" : "366",
+            "Description" : "Amazon Connect Domain Expiry days"
+        }, 
+        "ConnectKeyPendingWindowInDays" : {
+            "Type" : "String",
+            "Default" : "20",
+            "Description" : "Amazon Connect key pending window in days"
+        },                 
+        "AWSAccountId" : {
+            "Type" : "String",
+            "Default" : "153264177053",
+            "Description" : "AWS Account ID"
+        }             
+    },    
+    "Resources": {
+        "ptConnectInstance": {
+            "Type": "AWS::Connect::Instance",
+            "Properties": {
+                "Attributes" : {
+                    "ContactflowLogs" : true,                    
+                    "InboundCalls" : true,
+                    "OutboundCalls" : true
+                  },
+                "IdentityManagementType" : "CONNECT_MANAGED",
+                "InstanceAlias" : { "Ref" : "ConnectInstanceAlias"}
+            }
+        },
+        "ptConnectPhoneNumber": {
+            "Type" : "AWS::Connect::PhoneNumber",
+            "Properties" : {
+                "CountryCode" : "US",
+                "Description" : "Phonenumber",
+                "TargetArn" : {
+                    "Fn::GetAtt": [
+                        "ptConnectInstance",
+                        "Arn"
+                    ]
+                },
+                "Type" : "TOLL_FREE"
+              }
+          },
+        "ptConnectKeyAdmin" : {
+            "Type" : "AWS::IAM::User",
+              "Properties" : {
+              "UserName" : "pcsConnectUser"
+            }
+        }, 
+        "ptConnectKey": {
+            "Type": "AWS::KMS::Key",
+            "Properties": {
+            "Description": "Symmetric encryption KMS key",
+            "EnableKeyRotation": true,
+            "PendingWindowInDays": { "Ref" : "ConnectKeyPendingWindowInDays"},
+            "KeyPolicy": {
+                "Version": "2012-10-17",
+                "Id": "amazon-connect-ptf-key",
+                "Statement": [
+                    {
+                        "Sid": "Enable IAM User Permissions",
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": { "Fn::Join" : [ ":", [ { "Fn::Join" : [ "::", [ "arn:aws:iam", { "Ref":"AWSAccountId" } ] ] }, "root" ] ] }
+                        },
+                        "Action": "kms:*",
+                        "Resource": "*"
+                    },
+                    {
+                        "Sid": "Allow administration of the key",
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": {
+                                "Fn::GetAtt": [
+                                    "ptConnectKeyAdmin",
+                                    "Arn"
+                                    ]
+                             }
+                        },
+                        "Action": [
+                            "kms:Create*",
+                            "kms:Describe*",
+                            "kms:Enable*",
+                            "kms:List*",
+                            "kms:Put*",
+                            "kms:Update*",
+                            "kms:Revoke*",
+                            "kms:Disable*",
+                            "kms:Get*",
+                            "kms:Delete*",
+                            "kms:ScheduleKeyDeletion",
+                            "kms:CancelKeyDeletion"
+                        ],
+                        "Resource": "*"
+                    }
+                ]
+             }
+            },
+            "DependsOn" : "ptConnectKeyAdmin"
+        },
+        "ptConnectDomain": {
+          "Type" : "AWS::CustomerProfiles::Domain",
+          "Properties" : {
+              "DefaultEncryptionKey" : {
+                "Fn::GetAtt": [
+                    "ptConnectKey",
+                    "Arn"
+                    ]
+                },
+              "DefaultExpirationDays" : { "Ref" : "ConnectDomainExpiryDays"},                
+              "DomainName" : { "Ref" : "ConnectDomainName"}
+            },
+            "DependsOn" : "ptConnectKey"
+        },
+        "ptConnectIntgn": {
+          "Type" : "AWS::CustomerProfiles::Integration",
+          "Properties" : {
+              "DomainName" : { "Ref" : "ConnectDomainName"},
+              "ObjectTypeName" : "CTR",
+              "Uri" : {
+                "Fn::GetAtt": [
+                    "ptConnectInstance",
+                    "Arn"
+                    ]
+                }
+            },
+            "DependsOn" : "ptConnectDomain"
+        },     
+        "ConnectInstanceId": {
+            "Type": "AWS::SSM::Parameter",
+            "Properties": {
+                "Name": "/ptf/connect/v1/ConnectInstanceId",
+                "Type": "String",
+                "Value": {
+                "Fn::GetAtt": [
+                    "ptConnectInstance",
+                    "Arn"
+                    ]
+                },
+                "Description": "ARN of Connect Instance",
+            },
+            "DependsOn" : "ptConnectInstance"
+        }, 
+        "ConnectSymKey": {
+            "Type": "AWS::SSM::Parameter",
+            "Properties": {
+                "Name": "/ptf/connect/v1/ConnectSymKey",
+                "Type": "String",
+                "Value": {
+                "Fn::GetAtt": [
+                    "ptConnectKey",
+                    "Arn"
+                    ]
+                },
+                "Description": "ARN of ConnectSymKey"
+            },
+            "DependsOn" : "ptConnectKey"
+        }          
+    },
+    "Outputs": {
+        "ptConnectInstanceArn": {
+            "Description": "The ARN of Connect instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ptConnectInstance",
+                    "Arn"
+                ]
+            },
+            "Export" : {
+                  "Name" : {"Fn::Sub": "PtConnectInstanceArn" }
+            }              
+        },
+        "ptfConnectCftStackName": {
+            "Description": "The Stack name of Amazon Connect Provisioning",
+            "Value": { "Ref" : "AWS::StackName" },
+            "Export" : {
+                  "Name" : {"Fn::Sub": "PtConnectStackName" }
+            }              
+        }        
+    }
+}
