@@ -15,7 +15,7 @@ In case of some events such as 'Talk to a patient after knee replacement surgery
 * `cdk synth`       emits the synthesized CloudFormation template
 
 ## Status
-1. Toll Free Number (for 2 Way SMS communication) - Could not be tested as Amazon Pinpoint does not facilitate origination numbers from India.
+1. Toll Free Number (for 2 Way SMS communication)  - Tested with US Mobile phone number
 2. Documentation (Readme.md) - To be reviewed
 3. Blog - To be discussed
 
