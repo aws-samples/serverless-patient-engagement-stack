@@ -30,6 +30,7 @@ Note that the solution realizes the backend service of notifying the patients of
 For Amazon Pinpoint, 
 - Verify your email identity. This email id is sender email for Patient Care Service. If your Amazon Pinpoint is not enabled for production, verify the patient's email id as well.
 - Request support to increase SMS quota (Else you may exhaust SMS quota and you may not be able to notify through SMS channel)
+- In the context of 2-Way SMS configuration, configure SNS Topic created as part of the stack execution through Amazon Pinpont Console
 <br>
 For Amazon Connect,
 - Run curl command to configure Amazon Connect Instance <br>
