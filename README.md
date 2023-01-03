@@ -1,9 +1,9 @@
 # Serverless Patient Engagement Stack
 
-Serverless Patient Engagement sack is a simple implementation that leverages the powers of Amazon Pinpoint and Amazon Connect to influence positive healthcare outcome through timely notifications to the patients about their upcoming events related their health protocol. The assignment of health protocol begins when the patient meets their physician/health care provider. The care provider develops a health protocol that is inline with patient care events and activities; Then the physician assigns that protocol with a specific patient. <br>
-Eg. Physician shall develop a "Diabetic Care Protocol" for a specific patient that comprises of the following events, such as checking the blood glucose level once in 5 days, Blood Pressure check once in 5 days, HbA1c report for every 3 months, Physician consultation along with blood test report once in 3 months. 
+Serverless Patient Engagement stack is a simple implementation that leverages the powers of Amazon Pinpoint and Amazon Connect to influence positive healthcare outcome through timely notifications to the patients about their upcoming events related their health protocol. The assignment of health protocol begins when the patient meets their physician/health care provider. The care provider develops a health protocol that is inline with patient care events and activities; Then the physician assigns that protocol with a specific patient. <br><br>
+Eg. Physician shall develop a "Diabetic Care Protocol" for a specific patient that comprises of the following events, such as checking the blood glucose level once in 5 days, Blood Pressure check once in 5 days, HbA1c report for every 3 months, Physician consultation along with blood test report once in 3 months. <br>
 The implementation keeps track of these events and notifies the patient so that the patient does not miss the routine. In addition to the notifications, the implementation also enables the patient to interact with the application back with the confirmation to ease the process of appointment booking.
-Eg. A patient can respond to the SMS message that says, 'A Lab technician from Octank would visit your home to collect blood samples tomorrow, Reply with OK to confirm'. <br>
+Eg. A patient can respond to the SMS message that says, 'A Lab technician from Octank would visit your home to collect blood samples tomorrow, Reply with OK to confirm'. <br><br>
 In case of some events such as 'Talk to a patient after knee replacement surgery' may require some Care agent to call the patient and understand how the patient is responding post surgery.
 
 ## Useful commands
@@ -232,4 +232,3 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
-
